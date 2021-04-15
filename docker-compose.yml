@@ -20,5 +20,3 @@ services:
         condition: on-failure
         delay: 2s
         max_attempts: 3
-      ports:
-        - "80:80"
