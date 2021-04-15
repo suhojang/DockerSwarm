@@ -36,7 +36,8 @@
 
 + manager와 worker간 join을 위한 token 생성
   + manager에서 아래와 같이 명령어 실행
-> 여기서 docker01은 manager, docker02는 worker
+> 여기서 docker01은 manager, docker02는 worker   
+>    
 
 ```shell
 [root@docker01 swarm]# docker swarm init
