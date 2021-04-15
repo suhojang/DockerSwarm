@@ -4,9 +4,8 @@
     + Docker를 사용한 orchestration infra를 구축할 때 가장 호환성이 좋음
      
 
-+ Spring Security 주요 모듈
+![Docker Swarm](https://github.com/suhojang/dockerswram/blob/master/docker-swram.png)
 
-  ![Docker Swarm](https://github.com/suhojang/dockerswarm/blob/master/Spring_security_module.png)
     + SecurityContextHolder: 보안 주체의 세부 정보를 포함하여 응용프로그램의 현재 보안 Context에 대한 세부 정보가 저장 된다.
       기본적으로 SecurityContextHolder.MODE_INHERITABLETHREADLOCAL 방법과 SecurityContextHolder.MODE_THREADLOCAL 방법을 제공한다.
 
