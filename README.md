@@ -105,10 +105,12 @@ Creating service hostname_web
 
 + docker service가 생성 되었는지 확인
 ```shell
+# service 생성 확인
 [root@docker01 swarm]# docker stack ls
 NAME      SERVICES
 hostname  1
 
+# service 정보 확인
 [root@docker01 swarm]# docker service ls
 ID            NAME          MODE        REPLICAS  IMAGE
 a4pk7xq9xetr  hostname_web  replicated  3/3       mousai86/hostname:latest
@@ -126,35 +128,43 @@ n427wjv5dgzr  hostname_web.3  mousai86/hostname:latest  kube-m    Running       
 
 + docker container 확인
 ```shell
+# manager node의 docker container 확인
 [root@docker01 swarm]# docker ps
 CONTAINER ID        IMAGE                                                                                       COMMAND             CREATED             STATUS              PORTS               NAMES
 bfae3ea981e0        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     4 minutes ago       Up 4 minutes        80/tcp              hostname_web.3.n427wjv5dgzryt8sjej888fpr
 e7e1216a8689        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     4 minutes ago       Up 4 minutes        80/tcp              hostname_web.1.w7348rsr1r99wyvor0shp0sf3
 
+# worker node의 docker container 확인
 [root@docker02 ~]# docker ps
 CONTAINER ID        IMAGE                                                                                       COMMAND             CREATED             STATUS              PORTS               NAMES
 1c00365ee445        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     5 minutes ago       Up 5 minutes        80/tcp              hostname_web.2.zu686sh6tdehh739tj1f61sfl
 ```
 
 + yml에 설정 한  services.web.deploy.restart_policy 설정이 작동 되는지 확인
-  + docker의 container를 stop하면 자동으로 container가 manager에 생성 된 걸 확인 할 수 있다.
-  + docker service ps [서비스명]을 이용하여 shutdown/Running Time을 확인할 수 있다.
 ```shell
+# worker container 확인 
 [root@docker02 ~]# docker ps
 CONTAINER ID        IMAGE                                                                                       COMMAND             CREATED             STATUS              PORTS               NAMES
 fb26cd490f29        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     3 minutes ago       Up 3 minutes        80/tcp              hostname_web.3.jm3sb64rf8nvxu5blkkdwha3y
 9f7ce97bba5b        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     3 minutes ago       Up 3 minutes        80/tcp              hostname_web.2.exynhrbcn7ak65syeq403hyjn
 92ca2502741d        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     3 minutes ago       Up 3 minutes        80/tcp              hostname_web.1.xal4qnkcerenqxxrdj99u63fi
+
+# worker hostname_web.3.jm3sb64rf8nvxu5blkkdwha3y container 종료
 [root@docker02 ~]# docker stop hostname_web.3.jm3sb64rf8nvxu5blkkdwha3y
 hostname_web.3.jm3sb64rf8nvxu5blkkdwha3y
+
+# worker container 확인 
 [root@docker02 ~]# docker ps
 CONTAINER ID        IMAGE                                                                                       COMMAND             CREATED             STATUS              PORTS               NAMES
 9f7ce97bba5b        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     4 minutes ago       Up 3 minutes        80/tcp              hostname_web.2.exynhrbcn7ak65syeq403hyjn
 92ca2502741d        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     4 minutes ago       Up 4 minutes        80/tcp              hostname_web.1.xal4qnkcerenqxxrdj99u63fi
 
+# manager container 확인 - container가 manager에 생성 된 걸 확인 할 수 있다/
 [root@docker01 swarm]# docker ps
 CONTAINER ID        IMAGE                                                                                       COMMAND             CREATED             STATUS              PORTS               NAMES
 2e63329f9dad        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     31 seconds ago      Up 28 seconds       80/tcp              hostname_web.3.mxp0i1tujwehq7fh4p5xku84v
+
+# service의 Running/Shutdown time 확인
 [root@docker01 swarm]# docker service ps hostname_web
 ID            NAME                IMAGE                     NODE      DESIRED STATE  CURRENT STATE           ERROR                        PORTS
 xal4qnkceren  hostname_web.1      mousai86/hostname:latest  docker02  Running        Running 4 minutes ago
@@ -169,24 +179,34 @@ n427wjv5dgzr   \_ hostname_web.3  mousai86/hostname:latest  kube-m    Shutdown  
 
 + docker command로 scale 조절하기
 ```shell
+# service의 scale을 1로 설정
 [root@docker01 swarm]# docker service scale hostname_web=1
 hostname_web scaled to 1
 
+# service의 replicas 확인
 [root@docker01 swarm]# docker service ls
 ID            NAME          MODE        REPLICAS  IMAGE
 a4pk7xq9xetr  hostname_web  replicated  1/1       mousai86/hostname:latest
+
+# manager container 확인
 [root@docker01 swarm]# docker ps
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 
+# worker container 확인
 [root@docker02 ~]# docker ps
 CONTAINER ID        IMAGE                                                                                       COMMAND             CREATED             STATUS              PORTS               NAMES
 9f7ce97bba5b        mousai86/hostname@sha256:49cf580ab47e837e710baa3af661941fdf260960756b163972376a65367776c9   "python app.py"     9 minutes ago       Up 8 minutes        80/tcp              hostname_web.2.exynhrbcn7ak65syeq403hyjn
 
+# service의 scale을 5로 설정
 [root@docker01 swarm]# docker service scale hostname_web=5
 hostname_web scaled to 5
+
+# service의 replicas 확인
 [root@docker01 swarm]# docker service ls
 ID            NAME          MODE        REPLICAS  IMAGE
 a4pk7xq9xetr  hostname_web  replicated  5/5       mousai86/hostname:latest
+
+# service의 status 확인
 [root@docker01 swarm]# docker service ps hostname_web
 ID            NAME                IMAGE                     NODE      DESIRED STATE  CURRENT STATE            ERROR  PORTS
 xv482i7pc0w7  hostname_web.1      mousai86/hostname:latest  kube-m    Running        Running 8 seconds ago
@@ -205,4 +225,10 @@ hostname_web
 # docker service 를 강제로 update 시키기
 [root@docker01 swarm]# docker service update hostname_web --force
 hostname_web
+
+# docker swarm 삭제하기
+[root@docker01 swarm]# docker stack rm hostname
+Removing service hostname_web
+Removing network hostname_service-network
+
 ```
