@@ -230,5 +230,4 @@ hostname_web
 [root@docker01 swarm]# docker stack rm hostname
 Removing service hostname_web
 Removing network hostname_service-network
-
 ```
