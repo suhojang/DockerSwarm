@@ -8,8 +8,8 @@ services:
     image: mousai86/hostname:latest
     ports:
       - "80:80"
-      networks:
-        - service-network
+    networks:
+      - service-network
     deploy:
       replicas: 3
       resources:
